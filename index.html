@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Angkor Wat Blog</title>
+
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        // Initialize EmailJS with your Public Key
+        emailjs.init({ publicKey: "zbRKx6K_xyC-XIi01" });
+    </script>
+
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f5d8d8;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            background-color: #6b1042;
+            color: white;
+            padding: 18px 10px 12px;
+            text-align: center;
+        }
+        header h1 { margin: 0 0 4px; font-size: 2rem; }
+        header p  { margin: 0; font-size: 1rem; opacity: .85; }
+
+        /* ===== LAYOUT ===== */
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 16px auto;
+            gap: 16px;
+            padding: 0 10px;
+            align-items: flex-start;
+        }
+        .content {
+            flex: 4;
+            background: rgb(239, 226, 234);
+            padding: 28px 28px 24px;
+            border-radius: 12px;
+        }
+        .sidebar {
+            flex: 2;
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            position: sticky;
+            top: 12px;
+        }
+
+        /* ===== ARTICLE ===== */
+        .content h2 { margin-top: 0; color: #4a0a2e; text-align: center; }
+        .meta { color: gray; font-size: 14px; margin-bottom: 16px; text-align: center; }
+        .content p  { text-align: left; line-height: 1.7; color: #333; margin-bottom: 14px; }
+
+        /* ===== SLIDESHOW ===== */
+        .slideshow {
+            position: relative;
+            margin-bottom: 22px;
+            text-align: center;
+        }
+        .slide { display: none; }
+        .slide img {
+            width: 85%;
+            height: 420px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 4px 14px rgba(0,0,0,.18);
+        }
+        .fade { animation: fadeEffect 1.2s; }
+        @keyframes fadeEffect {
+            from { opacity: .3; }
+            to   { opacity: 1; }
+        }
+        .slide-caption {
+            font-size: 13px;
+            color: #777;
+            margin-top: 6px;
+            font-style: italic;
+        }
+        /* Dot indicators */
+        .dots { text-align: center; margin-top: 10px; }
+        .dot {
+            display: inline-block;
+            width: 9px; height: 9px;
+            background: #c9a0b0;
+            border-radius: 50%;
+            margin: 0 3px;
+            cursor: pointer;
+            transition: background .3s;
+        }
+        .dot.active { background: #6b1042; }
+
+        /* ===== SIDEBAR CATEGORIES ===== */
+        .sidebar h3 { color: #4a0a2e; margin-top: 0; border-bottom: 2px solid #f0e0ea; padding-bottom: 6px; }
+        ul { list-style: none; padding: 0; margin: 0 0 10px; }
+        ul li {
+            padding: 10px 8px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color .3s;
+        }
+        ul li:hover { background-color: #f0f0f0; }
+        .category-title { font-weight: bold; display: block; color: #24535a; }
+        .category-desc {
+            font-size: 13px; color: #555; margin: 0;
+            max-height: 0; opacity: 0; overflow: hidden;
+            transition: max-height .4s ease, opacity .4s ease, margin-top .4s ease;
+        }
+        ul li:hover .category-desc { max-height: 80px; opacity: 1; margin-top: 6px; }
+
+        /* ===== POPULAR POSTS ===== */
+        .popular-posts-container { margin-top: 18px; }
+        .popular-post {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 13px;
+            padding-bottom: 13px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            border-radius: 6px;
+            padding: 6px;
+            transition: background .2s;
+        }
+        .popular-post:last-child { border-bottom: none; margin-bottom: 0; }
+        .popular-post:hover { background: #f9f2f6; }
+        .popular-post img {
+            width: 65px; height: 65px;
+            object-fit: cover;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+        .popular-post-info a {
+            text-decoration: none;
+            color: #106b5a;
+            font-weight: bold;
+            font-size: 13.5px;
+            display: block;
+            margin-bottom: 3px;
+            transition: color .3s;
+        }
+        .popular-post:hover .popular-post-info a { color: #c0392b; text-decoration: underline; }
+        .popular-post-date { font-size: 11.5px; color: gray; margin: 0; }
+
+        /* ===== TAGS ===== */
+        .post-tag {
+            display: inline-block;
+            font-size: 10px;
+            padding: 2px 7px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+        }
+        .tag-travel   { background: #2a7d9c; }
+        .tag-history  { background: #7c3d9e; }
+        .tag-culture  { background: #c0622f; }
+        .tag-food     { background: #b5860d; }
+        .tag-festival { background: #c0392b; }
+        .tag-temple   { background: #27654a; }
+        .tag-tips     { background: #1a6e82; }
+        .tag-nature   { background: #3a7a2e; }
+        .tag-night    { background: #3d2b8e; }
+
+        /* ===== MODAL OVERLAY ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.6);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 30px 16px;
+            animation: fadeIn .25s;
+        }
+        .modal-overlay.open { display: flex; justify-content: center; align-items: flex-start; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal {
+            background: white;
+            border-radius: 14px;
+            max-width: 760px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0,0,0,.35);
+            animation: slideUp .3s ease;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to   { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-hero {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+        .modal-body { padding: 28px 32px 32px; }
+        .modal-tag  { margin-bottom: 10px; }
+        .modal-body h2 { margin: 0 0 6px; color: #4a0a2e; font-size: 1.5rem; line-height: 1.3; }
+        .modal-meta { color: #888; font-size: 13px; margin-bottom: 18px; }
+        .modal-body p { line-height: 1.75; color: #444; margin-bottom: 14px; }
+        .modal-body h3 { color: #24535a; margin: 22px 0 8px; font-size: 1.05rem; }
+        .modal-body ul.article-list {
+            margin: 0 0 16px 18px;
+            padding: 0;
+            list-style: disc;
+        }
+        .modal-body ul.article-list li {
+            border: none;
+            padding: 4px 0;
+            font-size: 14.5px;
+            color: #444;
+            cursor: default;
+        }
+        .modal-body ul.article-list li:hover { background: none; }
+
+        .modal-images {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 18px 0;
+        }
+        .modal-images img {
+            width: 100%;
+            height: 170px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .close-btn {
+            display: block;
+            margin: 10px auto 0;
+            padding: 10px 32px;
+            background: #6b1042;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background .2s;
+        }
+        .close-btn:hover { background: #9b1a5e; }
+
+        /* ===== EMAIL / SIGN-IN SECTION ===== */
+        .email-section {
+            background: linear-gradient(135deg, #4a0a2e 0%, #6b1042 60%, #9b1a5e 100%);
+            border-radius: 14px;
+            padding: 32px 28px;
+            margin: 28px 0 0;
+            color: white;
+            box-shadow: 0 6px 24px rgba(107,16,66,.35);
+        }
+        .email-section h3 {
+            margin: 0 0 6px;
+            font-size: 1.25rem;
+            letter-spacing: .3px;
+        }
+        .email-section p.subtitle {
+            margin: 0 0 20px;
+            opacity: .8;
+            font-size: 13.5px;
+            line-height: 1.5;
+            text-align: left;
+        }
+
+        /* Tab switcher */
+        .tab-bar {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,.1);
+            border-radius: 8px;
+            padding: 4px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            background: transparent;
+            color: rgba(255,255,255,.7);
+            transition: all .25s;
+        }
+        .tab-btn.active {
+            background: white;
+            color: #6b1042;
+            box-shadow: 0 2px 8px rgba(0,0,0,.18);
+        }
+
+        /* Form panels */
+        .form-panel { display: none; }
+        .form-panel.active { display: block; }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            opacity: .85;
+            letter-spacing: .4px;
+            text-transform: uppercase;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 13px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            background: rgba(255,255,255,.92);
+            color: #333;
+            outline: none;
+            transition: box-shadow .2s;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            box-shadow: 0 0 0 3px rgba(255,255,255,.4);
+        }
+        .form-group textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+        }
+        .form-row .form-group { flex: 1; }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: white;
+            color: #6b1042;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background .2s, transform .1s;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .submit-btn:hover { background: #fce8f3; transform: translateY(-1px); }
+        .submit-btn:active { transform: translateY(0); }
+        .submit-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+        /* Status message */
+        .status-msg {
+            display: none;
+            padding: 11px 14px;
+            border-radius: 8px;
+            font-size: 13.5px;
+            margin-top: 12px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .status-msg.success {
+            display: block;
+            background: rgba(39, 174, 96, .25);
+            border: 1px solid rgba(39,174,96,.5);
+            color: #d4fce8;
+        }
+        .status-msg.error {
+            display: block;
+            background: rgba(231, 76, 60, .25);
+            border: 1px solid rgba(231,76,60,.5);
+            color: #ffd6d0;
+        }
+
+        /* Signed-in state */
+        .signed-in-bar {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,.12);
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin-bottom: 16px;
+            font-size: 13.5px;
+        }
+        .signed-in-bar.show { display: flex; }
+        .signed-in-bar .avatar {
+            width: 32px; height: 32px;
+            background: white;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .signed-in-bar span { flex: 1; opacity: .9; }
+        .sign-out-link {
+            font-size: 12px;
+            opacity: .7;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .sign-out-link:hover { opacity: 1; }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: #6b1042;
+            color: #f5c6da;
+            text-align: center;
+            padding: 16px;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 700px) {
+            .container { flex-direction: column; }
+            .sidebar { position: static; }
+            .modal-images { grid-template-columns: 1fr; }
+            .form-row { flex-direction: column; gap: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🏛 Explore Cambodia</h1>
+    <p>Discover the beauty of Angkor Wat</p>
+</header>
+
+<div class="container">
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="content">
+        <h2>Angkor Wat Temple</h2>
+        <p class="meta">By CheatChinh &nbsp;|&nbsp; March 2026</p>
+
+        <!-- Slideshow -->
+        <div class="slideshow">
+            <div class="slide fade"><img src="https://images.pexels.com/photos/28912598/pexels-photo-28912598.jpeg" alt="Angkor Wat sunrise"><p class="slide-caption">Magical sunrise over Angkor Wat</p></div>
+            <div class="slide fade"><img src="https://images.pexels.com/photos/29046012/pexels-photo-29046012.jpeg" alt="Bayon Temple"><p class="slide-caption">The iconic stone faces of Bayon Temple</p></div>
+            <div class="slide fade"><img src="https://images.pexels.com/photos/2416576/pexels-photo-2416576.jpeg" alt="Khmer Carvings"><p class="slide-caption">Intricate bas-relief carvings in sandstone</p></div>
+            <div class="slide fade"><img src="https://images.pexels.com/photos/28912607/pexels-photo-28912607.jpeg" alt="Temple Corridor"><p class="slide-caption">Ancient corridors of Angkor Wat</p></div>
+            <div class="slide fade"><img src="https://images.pexels.com/photos/19063439/pexels-photo-19063439.jpeg" alt="Angkor reflections"><p class="slide-caption">Perfect reflections in the temple moat</p></div>
+            <div class="slide fade"><img src="https://images.pexels.com/photos/15890596/pexels-photo-15890596.jpeg" alt="Ta Prohm"><p class="slide-caption">Ta Prohm — where roots embrace ancient stone</p></div>
+            <div class="slide fade"><img src="https://images.pexels.com/photos/15890548/pexels-photo-15890548.jpeg" alt="Siem Reap"><p class="slide-caption">The charming town of Siem Reap</p></div>
+            <div class="slide fade"><img src="https://images.pexels.com/photos/33471750/pexels-photo-33471750.jpeg" alt="Cambodian food"><p class="slide-caption">Traditional Cambodian cuisine</p></div>
+            <div class="slide fade"><img src="https://images.pexels.com/photos/9307972/pexels-photo-9307972.jpeg" alt="Khmer New Year"><p class="slide-caption">Vibrant Khmer New Year celebrations</p></div>
+            <div class="slide fade"><img src="https://images.pexels.com/photos/15412787/pexels-photo-15412787.jpeg" alt="Angkor at dusk"><p class="slide-caption">Golden hour at the temple complex</p></div>
+        </div>
+        <div class="dots" id="dots"></div>
+
+        <!-- Article Text -->
+        <p>
+            <strong>Angkor Wat</strong> is the largest religious monument in the world and one of the most important cultural landmarks in Cambodia.
+            Located in Siem Reap, it was originally built in the early 12th century as a Hindu temple dedicated to Vishnu by King Suryavarman II.
+            Spanning over 400 acres, it is surrounded by a moat that stretches nearly 5 kilometres — an engineering marvel of its time.
+        </p>
+        <p>
+            The temple is celebrated for its grand architecture, breathtaking bas-reliefs, and spectacular sunrise views. Every surface tells a story —
+            from epic mythological battles to the daily life of the Khmer people. Today, Angkor Wat is a symbol of national pride and prominently
+            features on the Cambodian flag, the only country in the world whose flag depicts a building.
+        </p>
+        <p>
+            Visitors from all over the world come to explore its layered history, admire its beauty, and absorb the peaceful atmosphere
+            surrounding the entire Angkor Archaeological Park — a UNESCO World Heritage Site since 1992.
+            Beyond Angkor Wat itself, the park contains hundreds of temples including Bayon, Ta Prohm, and Banteay Srei.
+        </p>
+        <p>
+            The best time to visit is during the dry season between November and March, when skies are clear for that iconic sunrise photograph
+            with the temple's five towers perfectly reflected in the still waters of the western reflecting pool.
+        </p>
+
+        <!-- ===== EMAIL JS SECTION ===== -->
+        <div class="email-section">
+            <h3>✉️ Connect with Us</h3>
+            <p class="subtitle">Sign in to send a message or contact our team directly about Angkor Wat tours & experiences.</p>
+
+            <!-- Signed-in bar (shown after sign-in) -->
+            <div class="signed-in-bar" id="signedInBar">
+                <div class="avatar">👤</div>
+                <span id="signedInName">Welcome back!</span>
+                <span class="sign-out-link" onclick="signOut()">Sign out</span>
+            </div>
+
+            <!-- Tab bar -->
+            <div class="tab-bar" id="tabBar">
+                <button class="tab-btn active" onclick="switchTab('signin')">🔐 Sign In</button>
+                <button class="tab-btn" onclick="switchTab('contact')">📩 Contact</button>
+            </div>
+
+            <!-- SIGN-IN PANEL -->
+            <div class="form-panel active" id="panel-signin">
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" id="si-name" placeholder="e.g. Sokha Chan" />
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="si-email" placeholder="you@example.com" />
+                </div>
+                <button class="submit-btn" id="signinBtn" onclick="handleSignIn()">
+                    🔐 Sign In &amp; Continue
+                </button>
+                <div class="status-msg" id="signin-status"></div>
+            </div>
+
+            <!-- CONTACT PANEL -->
+            <div class="form-panel" id="panel-contact">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Your Name</label>
+                        <input type="text" id="ct-name" placeholder="Sokha Chan" />
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="ct-email" placeholder="you@example.com" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Subject</label>
+                    <input type="text" id="ct-subject" placeholder="e.g. Angkor Wat Tour Enquiry" />
+                </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea id="ct-message" placeholder="Tell us what you'd like to know..."></textarea>
+                </div>
+                <button class="submit-btn" id="sendBtn" onclick="sendEmail()">
+                    📨 Send Message
+                </button>
+                <div class="status-msg" id="contact-status"></div>
+            </div>
+        </div>
+        <!-- END EMAIL SECTION -->
+
+    </div>
+
+    <!-- ===== SIDEBAR ===== -->
+    <div class="sidebar">
+        <h3>📂 Categories</h3>
+        <ul>
+            <li><span class="category-title">History</span><p class="category-desc">At its peak in the 12th century, the Khmer Empire's capital, Angkor, was the largest pre-industrial city in the world, covering over 1,000 square kilometers.</p></li>
+            <li><span class="category-title">Travel</span><p class="category-desc">Battambang is famous for its "Norry" (Bamboo Train)—a unique, makeshift local transport system consisting of a bamboo platform powered by a small engine that runs on old railway tracks.</p></li>
+            <li><span class="category-title">Culture</span><p class="category-desc">Apsara dancing is a classical Khmer performance art dating back to the 7th century. It is highly symbolic, with every intricate hand gesture conveying a specific meaning or part of a story.</p></li>
+            <li><span class="category-title">Architecture</span><p class="category-desc">Apsara dancing is a classical Khmer performance art dating back to the 7th century. It is highly symbolic, with every intricate hand gesture conveying a specific meaning or part of a story.</p></li>
+            <li><span class="category-title">Food</span><p class="category-desc">Kampot pepper, grown in the southern region of Cambodia, holds a Protected Geographical Indication (PGI) status—similar to Champagne in France—and is prized by chefs globally for its complex, floral aroma.</p></li>
+        </ul>
+
+        <div class="popular-posts-container">
+            <h3>🔥 Popular Posts</h3>
+
+            <div class="popular-post" onclick="openPost('sunrise')">
+                <img src="./sunrise-at-the-angkor-wat-temple-in-cambodia.jpg" alt="Sunrise">
+                <div class="popular-post-info">
+                    <span class="post-tag tag-travel">Travel</span>
+                    <a href="#">Best Sunrise Spots at Angkor Wat</a>
+                    <p class="popular-post-date">Feb 12, 2026</p>
+                </div>
+            </div>
+
+            <div class="popular-post" onclick="openPost('carvings')">
+                <img src="https://media.istockphoto.com/id/2183638496/photo/hindu-relief-corridor-angkor-wat.jpg?s=612x612&w=0&k=20&c=PqtApJ3e3kXgSYSKcSAggeoaXhju-DB5nHFS-Ar7zp8=" alt="Carvings">
+                <div class="popular-post-info">
+                    <span class="post-tag tag-history">History</span>
+                    <a href="#">The Hidden Meanings in Khmer Carvings</a>
+                    <p class="popular-post-date">Jan 28, 2026</p>
+                </div>
+            </div>
+
+            <div class="popular-post" onclick="openPost('itinerary')">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTseAE3YfIBtd5ejJjfPzRYEM8oaJwOhk9JGg&s" alt="Siem Reap">
+                <div class="popular-post-info">
+                    <span class="post-tag tag-travel">Travel</span>
+                    <a href="#">3-Day Siem Reap Travel Itinerary</a>
+                    <p class="popular-post-date">Jan 15, 2026</p>
+                </div>
+            </div>
+
+            <div class="popular-post" onclick="openPost('temples')">
+                <img src="https://cambodiatravel.com/images/2020/12/Bayons-face-towers-angkor-thom-cambodia-2.jpg" alt="Bayon">
+                <div class="popular-post-info">
+                    <span class="post-tag tag-temple">Temple</span>
+                    <a href="#">Top 5 Temples to Visit Near Angkor Wat</a>
+                    <p class="popular-post-date">Dec 30, 2025</p>
+                </div>
+            </div>
+
+            <div class="popular-post" onclick="openPost('festival')">
+                <img src="https://www.tripsavvy.com/thmb/uv5jUhcqTug8ha5ghFft_i9BBlU=/1500x1000/filters:no_upscale():max_bytes(150000):strip_icc()/sandstupa_khmernewyear-56a40d843df78cf7728095df.jpg" alt="Festival">
+                <div class="popular-post-info">
+                    <span class="post-tag tag-festival">Festival</span>
+                    <a href="#">Celebrating Khmer New Year in Siem Reap</a>
+                    <p class="popular-post-date">Dec 18, 2025</p>
+                </div>
+            </div>
+
+            <div class="popular-post" onclick="openPost('food')">
+                <img src="https://img.freepik.com/free-photo/rice-noodles-red-curry-with-meatballs-with-dried-chilies-basil-cucumber-long-beans_1150-27075.jpg" alt="Food">
+                <div class="popular-post-info">
+                    <span class="post-tag tag-food">Food</span>
+                    <a href="#">Must-Try Cambodian Dishes in Siem Reap</a>
+                    <p class="popular-post-date">Dec 5, 2025</p>
+                </div>
+            </div>
+
+            <div class="popular-post" onclick="openPost('tips')">
+                <img src="https://www.angkorphotographytours.com/wp-content/uploads/2023/12/angkor-tickets-office-768x577.jpeg" alt="Tips">
+                <div class="popular-post-info">
+                    <span class="post-tag tag-tips">Travel Tips</span>
+                    <a href="#">10 Essential Tips Before Visiting Angkor</a>
+                    <p class="popular-post-date">Nov 22, 2025</p>
+                </div>
+            </div>
+
+            <div class="popular-post" onclick="openPost('taprohm')">
+                <img src="https://tse1.mm.bing.net/th/id/OIP.loB9fYDUTavgbHavR5FYewHaNN?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Ta Prohm">
+                <div class="popular-post-info">
+                    <span class="post-tag tag-nature">Nature</span>
+                    <a href="#">Ta Prohm: Where Jungle Meets Temple</a>
+                    <p class="popular-post-date">Nov 8, 2025</p>
+                </div>
+            </div>
+
+            <div class="popular-post" onclick="openPost('night')">
+                <img src="https://www.indochinavoyages.com/wp-content/uploads/2020/02/pub-street.banner.jpg" alt="Night">
+                <div class="popular-post-info">
+                    <span class="post-tag tag-night">Night Scene</span>
+                    <a href="#">Angkor Wat After Dark: Night Experiences</a>
+                    <p class="popular-post-date">Oct 30, 2025</p>
+                </div>
+            </div>
+
+            <div class="popular-post" onclick="openPost('history')">
+                <img src="https://c8.alamy.com/comp/S333YM/sculpture-of-a-hindu-guardian-god-holding-a-trident-preah-ko-temple-roluos-cambodia-S333YM.jpg" alt="History">
+                <div class="popular-post-info">
+                    <span class="post-tag tag-history">The Khmer Empire</span>
+                    <a href="#">The Rise and Fall of the Khmer Empire</a>
+                    <p class="popular-post-date">Oct 15, 2025</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ===== MODAL ===== -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeOnBg(event)">
+    <div class="modal" id="modal">
+        <img class="modal-hero" id="modalHero" src="" alt="">
+        <div class="modal-body">
+            <div class="modal-tag"><span class="post-tag" id="modalTag"></span></div>
+            <h2 id="modalTitle"></h2>
+            <p class="modal-meta" id="modalMeta"></p>
+            <div id="modalContent"></div>
+            <button class="close-btn" onclick="closeModal()">✕ Close Article</button>
+        </div>
+    </div>
+</div>
+
+<footer>
+    © 2026 Explore Cambodia Blog &nbsp;·&nbsp; Made with ❤️ for Angkor Wat lovers
+</footer>
+
+<script>
+/* ========== EMAILJS CONFIG ========== */
+const EMAILJS_SERVICE_ID  = "service_j7o29qd";
+const EMAILJS_TEMPLATE_ID = "template_ys6z1dl";
+// Public key is already initialised in <head>
+
+/* ========== SESSION STATE ========== */
+let currentUser = JSON.parse(sessionStorage.getItem("blogUser") || "null");
+
+function applySignedInState() {
+    if (!currentUser) return;
+    document.getElementById("signedInBar").classList.add("show");
+    document.getElementById("signedInName").textContent = `Signed in as ${currentUser.name}`;
+    // Pre-fill contact form
+    document.getElementById("ct-name").value  = currentUser.name;
+    document.getElementById("ct-email").value = currentUser.email;
+    // Jump straight to contact tab
+    switchTab("contact", false);
+    // Hide sign-in tab button
+    document.querySelector('[onclick="switchTab(\'signin\')"]').style.display = "none";
+}
+
+function signOut() {
+    sessionStorage.removeItem("blogUser");
+    currentUser = null;
+    document.getElementById("signedInBar").classList.remove("show");
+    document.querySelector('[onclick="switchTab(\'signin\')"]').style.display = "";
+    document.getElementById("ct-name").value  = "";
+    document.getElementById("ct-email").value = "";
+    switchTab("signin", false);
+    showStatus("signin-status", "", "");
+}
+
+/* ========== TAB SWITCHER ========== */
+function switchTab(tab, updateBtns = true) {
+    document.querySelectorAll(".form-panel").forEach(p => p.classList.remove("active"));
+    document.getElementById("panel-" + tab).classList.add("active");
+    if (updateBtns) {
+        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+        const btn = document.querySelector(`[onclick="switchTab('${tab}')"]`);
+        if (btn) btn.classList.add("active");
+    }
+}
+
+/* ========== SIGN-IN HANDLER ========== */
+function handleSignIn() {
+    const name  = document.getElementById("si-name").value.trim();
+    const email = document.getElementById("si-email").value.trim();
+
+    if (!name || !email) {
+        showStatus("signin-status", "⚠️ Please enter your name and email.", "error");
+        return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showStatus("signin-status", "⚠️ Please enter a valid email address.", "error");
+        return;
+    }
+
+    const btn = document.getElementById("signinBtn");
+    btn.disabled = true;
+    btn.textContent = "Signing in…";
+
+    // Send a "welcome / sign-in notification" email via EmailJS
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        from_name:    name,
+        from_email:   email,
+        subject:      "New sign-in – Explore Cambodia Blog",
+        message:      `${name} (${email}) just signed in to the Explore Cambodia blog.`
+    })
+    .then(() => {
+        currentUser = { name, email };
+        sessionStorage.setItem("blogUser", JSON.stringify(currentUser));
+        btn.disabled = false;
+        btn.innerHTML = "🔐 Sign In &amp; Continue";
+        showStatus("signin-status", "✅ Signed in successfully!", "success");
+        setTimeout(() => {
+            showStatus("signin-status", "", "");
+            applySignedInState();
+        }, 1200);
+    })
+    .catch(err => {
+        btn.disabled = false;
+        btn.innerHTML = "🔐 Sign In &amp; Continue";
+        console.error("EmailJS sign-in error:", err);
+        showStatus("signin-status", "❌ Could not send notification. Check your EmailJS config.", "error");
+    });
+}
+
+/* ========== SEND CONTACT EMAIL ========== */
+function sendEmail() {
+    const name    = document.getElementById("ct-name").value.trim();
+    const email   = document.getElementById("ct-email").value.trim();
+    const subject = document.getElementById("ct-subject").value.trim();
+    const message = document.getElementById("ct-message").value.trim();
+
+    if (!name || !email || !subject || !message) {
+        showStatus("contact-status", "⚠️ Please fill in all fields.", "error");
+        return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showStatus("contact-status", "⚠️ Please enter a valid email.", "error");
+        return;
+    }
+
+    const btn = document.getElementById("sendBtn");
+    btn.disabled = true;
+    btn.textContent = "Sending…";
+
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        from_name:  name,
+        from_email: email,
+        subject:    subject,
+        message:    message
+    })
+    .then(() => {
+        btn.disabled = false;
+        btn.innerHTML = "📨 Send Message";
+        showStatus("contact-status", "✅ Message sent! We'll get back to you soon.", "success");
+        // Clear message + subject fields, keep name/email
+        document.getElementById("ct-subject").value = "";
+        document.getElementById("ct-message").value = "";
+    })
+    .catch(err => {
+        btn.disabled = false;
+        btn.innerHTML = "📨 Send Message";
+        console.error("EmailJS send error:", err);
+        showStatus("contact-status", "❌ Failed to send. Please try again later.", "error");
+    });
+}
+
+/* ========== HELPER ========== */
+function showStatus(id, msg, type) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.className = "status-msg" + (type ? " " + type : "");
+}
+
+// Restore session on load
+window.addEventListener("DOMContentLoaded", applySignedInState);
+
+
+/* ========== SLIDESHOW ========== */
+let slideIndex = 0;
+const slides = document.getElementsByClassName("slide");
+const dotsContainer = document.getElementById("dots");
+
+for (let i = 0; i < slides.length; i++) {
+    const d = document.createElement("span");
+    d.className = "dot";
+    d.onclick = () => goToSlide(i);
+    dotsContainer.appendChild(d);
+}
+
+function updateDots() {
+    document.querySelectorAll(".dot").forEach((d, i) => d.classList.toggle("active", i === slideIndex));
+}
+
+function goToSlide(n) {
+    slides[slideIndex].style.display = "none";
+    slideIndex = n;
+    slides[slideIndex].style.display = "block";
+    slides[slideIndex].classList.remove("fade");
+    void slides[slideIndex].offsetWidth;
+    slides[slideIndex].classList.add("fade");
+    updateDots();
+}
+
+function autoSlide() {
+    goToSlide((slideIndex + 1) % slides.length);
+    setTimeout(autoSlide, 3500);
+}
+
+goToSlide(0);
+setTimeout(autoSlide, 3500);
+
+
+/* ========== ARTICLE DATA ========== */
+const posts = {
+    sunrise: {
+        tag: "Travel", tagClass: "tag-travel",
+        title: "Best Sunrise Spots at Angkor Wat",
+        meta: "By CheatChinh  ·  February 12, 2026  ·  5 min read",
+        hero: "https://www.angkorphotographytours.com/wp-content/uploads/2016/02/angkor-sunrise-reflection.jpg",
+        content: `
+            <p>Watching the sun rise over Angkor Wat is one of the most breathtaking experiences in Southeast Asia.</p>
+            <h3>🌅 Top 3 Sunrise Positions</h3>
+            <ul class="article-list">
+                <li><strong>The Western Reflecting Pool</strong> — The classic spot. Arrive by 5:00 AM.</li>
+                <li><strong>The Northern Reflecting Pool</strong> — Less crowded, different angle.</li>
+                <li><strong>The Top Terrace</strong> — 360° panoramic view as daylight breaks.</li>
+            </ul>
+            <div class="modal-images">
+                <img src="https://media.istockphoto.com/id/646141986/video/angkor-wat-sunrise.avif?s=640x640&k=20&c=aJwbvlXqxa86Qz4I0L8L3qbAe1rkXt6AuIxVaqHHqRM=" alt="Sunrise 1">
+                <img src="https://media.istockphoto.com/id/1156831478/photo/beautiful-sunrise-over-angkor-wat-one-of-the-unesco-world-heritage-site-in-siem-reap-cambodia.jpg?s=612x612&w=0&k=20&c=odh8Mvczka-BaI4K3pDHekwCZYFVrqNIYudVGCOqlhI=" alt="Sunrise 2">
+            </div>
+            <h3>⏰ Practical Tips</h3>
+            <ul class="article-list">
+                <li>Gates open at 5:00 AM — be there at least 30 minutes before sunrise.</li>
+                <li>Bring a torch or phone light for the walk in the dark.</li>
+                <li>Dress in layers — mornings can be cool even in the dry season.</li>
+                <li>A tripod is highly recommended for long-exposure photography.</li>
+            </ul>
+        `
+    },
+    carvings: {
+        tag: "History", tagClass: "tag-history",
+        title: "The Hidden Meanings in Khmer Carvings",
+        meta: "By CheatChinh  ·  January 28, 2026  ·  6 min read",
+        hero: "https://media.istockphoto.com/id/2222564493/photo/young-buddhist-monk-walking-out-of-a-temple-in-angkor-wat-siem-reap-cambodia.jpg?s=612x612&w=0&k=20&c=sDNfro_eFfUDejkIL4UFwp_v0d47tQAvV0PcUMGwJfE=",
+        content: `
+            <p>The bas-reliefs of Angkor Wat stretch for nearly 800 metres — the longest continuous bas-relief in the world.</p>
+            <h3>🐍 Key Themes</h3>
+            <ul class="article-list">
+                <li><strong>The Churning of the Ocean of Milk</strong> — A cosmic creation myth.</li>
+                <li><strong>The Battle of Kurukshetra</strong> — Scenes from the Mahabharata.</li>
+                <li><strong>Heaven and Hell</strong> — Yama judges souls in remarkable detail.</li>
+                <li><strong>Suryavarman II's Military Parade</strong> — The only known portrait of a Khmer monarch.</li>
+            </ul>
+            <div class="modal-images">
+                <img src="https://helloangkor.com/wp-content/uploads/2021/08/IMG_20210903_1123382.jpg" alt="Carving 1">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFspqY_f23OgNZam0f4LTgEEfvLheUZXeIRw&s" alt="Carving 2">
+            </div>
+        `
+    },
+    itinerary: {
+        tag: "Travel", tagClass: "tag-travel",
+        title: "3-Day Siem Reap Travel Itinerary",
+        meta: "By CheatChinh  ·  January 15, 2026  ·  7 min read",
+        hero: "https://beaches-searcher.com/images/beaches/764201745/TH201745_fit_550_300.jpg",
+        content: `
+            <p>Three days is the sweet spot for experiencing Siem Reap.</p>
+            <h3>📅 Day 1 — The Grand Circuit</h3>
+            <ul class="article-list">
+                <li><strong>5:00 AM:</strong> Sunrise at Angkor Wat's western reflecting pool.</li>
+                <li><strong>10:00 AM:</strong> Angkor Thom — Bayon Temple and the Elephant Terrace.</li>
+                <li><strong>3:00 PM:</strong> Ta Prohm — the jungle-wrapped temple.</li>
+                <li><strong>6:00 PM:</strong> Pub Street and Night Market.</li>
+            </ul>
+            <h3>📅 Day 2 — Outer Temples</h3>
+            <ul class="article-list">
+                <li><strong>Banteay Srei</strong> — Pink sandstone carvings, 38km north.</li>
+                <li><strong>Beng Mealea</strong> — Remote jungle temple.</li>
+                <li><strong>Preah Khan</strong> — Dramatic tree roots over walls.</li>
+            </ul>
+            <div class="modal-images">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtdPaqpfr5MDj4LPZdku3taaHJq1IDGHKJiw&s" alt="Siem Reap">
+                <img src="https://www.siemreaphotels.net/data/Photos/700x500w/16767/1676754/1676754895.JPEG" alt="Temples">
+            </div>
+            <h3>📅 Day 3 — Culture & Relaxation</h3>
+            <ul class="article-list">
+                <li>Angkor National Museum for historical context.</li>
+                <li>Old Market for spices, silk, and souvenirs.</li>
+                <li>Traditional Apsara dance performance dinner.</li>
+                <li>Sunset boat ride on Tonle Sap Lake.</li>
+            </ul>
+        `
+    },
+    temples: {
+        tag: "Temple", tagClass: "tag-temple",
+        title: "Top 5 Temples to Visit Near Angkor Wat",
+        meta: "By CheatChinh  ·  December 30, 2025  ·  5 min read",
+        hero: "https://wefreespirits.com/wp-content/uploads/2023/07/ta-prohm-giant-tree-1.webp",
+        content: `
+            <p>The surrounding park contains hundreds of temples — several are as spectacular as Angkor Wat itself.</p>
+            <div class="modal-images">
+                <img src="https://i.pinimg.com/originals/51/c4/f6/51c4f6da5ffcff0d45093ed24271fab0.jpg" alt="Bayon">
+                <img src="https://images.fineartamerica.com/images/artworkimages/mediumlarge/3/neak-pean-temple-at-angkor-cambodia-marek-poplawski.jpg" alt="Ta Prohm">
+            </div>
+            <h3>🏛 The Top 5</h3>
+            <ul class="article-list">
+                <li><strong>Bayon Temple</strong> — 216 massive stone faces gazing in all directions.</li>
+                <li><strong>Ta Prohm</strong> — Dramatically entwined with massive trees.</li>
+                <li><strong>Banteay Srei</strong> — Pink sandstone with exquisite carvings.</li>
+                <li><strong>Preah Khan</strong> — Vast labyrinthine corridors.</li>
+                <li><strong>Neak Pean</strong> — Unique island temple in a reservoir.</li>
+            </ul>
+        `
+    },
+    festival: {
+        tag: "Festival", tagClass: "tag-festival",
+        title: "Celebrating Khmer New Year in Siem Reap",
+        meta: "By CheatChinh  ·  December 18, 2025  ·  4 min read",
+        hero: "https://files.intocambodia.org/content/big/9f85f2f585c27a80dcb203ca0f68e297.jpg",
+        content: `
+            <p>Khmer New Year — <em>Choul Chnam Thmey</em> — is celebrated over three days in mid-April.</p>
+            <div class="modal-images">
+                <img src="https://toursbyjeeps.com/wp-content/uploads/2020/06/Jeep-photo_-Khmer-New-Year-1024x512.jpg" alt="Festival 1">
+                <img src="https://png.pngtree.com/thumb_back/fh260/background/20250401/pngtree-celebrate-khmer-new-year-with-joy-tradition-and-glowing-festival-lights-image_17161909.jpg" alt="Festival 2">
+            </div>
+            <h3>🎊 What to Expect</h3>
+            <ul class="article-list">
+                <li><strong>Water Fights</strong> — Streets fill with water guns and buckets.</li>
+                <li><strong>Temple Ceremonies</strong> — Families bring offerings in traditional dress.</li>
+                <li><strong>Traditional Games</strong> — Angkunh, Chol Chhoung, and Leak Kanseng.</li>
+                <li><strong>Music and Dance</strong> — Live traditional music fills the streets.</li>
+            </ul>
+        `
+    },
+    food: {
+        tag: "Food", tagClass: "tag-food",
+        title: "Must-Try Cambodian Dishes in Siem Reap",
+        meta: "By CheatChinh  ·  December 5, 2025  ·  5 min read",
+        hero: "https://anvuitravel.com/wp-content/uploads/2025/01/bia-1.jpg",
+        content: `
+            <p>Cambodian cuisine is one of Southeast Asia's most underrated food traditions.</p>
+            <div class="modal-images">
+                <img src="https://newasiatours.com/uploads/Travel%20Guide/Luot6/Savoring%20Cambodian%20Fish%20Amok/1-cambodian-fish-amok-traditional-dish.jpg" alt="Cambodian Food">
+                <img src="https://i.pinimg.com/originals/a8/35/e5/a835e551510e766e4c3a21b9c2d9ee22.jpg" alt="Cambodian Food 2">
+            </div>
+            <h3>🍛 10 Dishes You Must Try</h3>
+            <ul class="article-list">
+                <li><strong>Fish Amok</strong> — Cambodia's national dish. Coconut milk curry steamed in banana leaves.</li>
+                <li><strong>Lok Lak</strong> — Stir-fried beef with lime and black pepper sauce.</li>
+                <li><strong>Nom Banh Chok</strong> — Rice noodles with herby fish-based green curry sauce.</li>
+                <li><strong>Bai Sach Chrouk</strong> — Grilled pork over broken rice.</li>
+                <li><strong>Kuy Teav</strong> — Warming noodle soup eaten for breakfast.</li>
+                <li><strong>Khmer Red Curry</strong> — Rich coconut curry with sweet potato.</li>
+                <li><strong>Fried Tarantulas</strong> — Deep-fried and seasoned street snack.</li>
+                <li><strong>Num Pang</strong> — Cambodia's answer to the bánh mì baguette.</li>
+            </ul>
+        `
+    },
+    tips: {
+        tag: "Travel Tips", tagClass: "tag-tips",
+        title: "10 Essential Tips Before Visiting Angkor",
+        meta: "By CheatChinh  ·  November 22, 2025  ·  4 min read",
+        hero: "https://images.pexels.com/photos/15412787/pexels-photo-15412787.jpeg",
+        content: `
+            <p>A little preparation goes a long way toward making your visit comfortable and unforgettable.</p>
+            <div class="modal-images">
+                <img src="https://images.pexels.com/photos/28912598/pexels-photo-28912598.jpeg" alt="Tips 2">
+                <img src="https://www.angkorphotographytours.com/wp-content/uploads/2023/12/angkor-tickets-office-768x577.jpeg" alt="Tips 1">
+            </div>
+            <h3>✅ The Essential 10</h3>
+            <ul class="article-list">
+                <li><strong>Buy your pass at the official ticket centre</strong> — Passes start at $37 USD for one day.</li>
+                <li><strong>Dress modestly</strong> — Shoulders and knees must be covered.</li>
+                <li><strong>Start early</strong> — Aim to be at the gates before 5:30 AM.</li>
+                <li><strong>Hire a licensed local guide</strong> — Transforms the experience.</li>
+                <li><strong>Stay hydrated</strong> — Carry at least 1.5 litres of water.</li>
+                <li><strong>Wear comfortable shoes</strong> — You'll walk 6–10km on uneven stone.</li>
+                <li><strong>Respect sacred spaces</strong> — Angkor Wat is an active place of worship.</li>
+                <li><strong>Don't climb restricted areas</strong> — Follow all signage.</li>
+                <li><strong>Carry USD or Riel</strong> — Small vendors prefer exact change.</li>
+                <li><strong>Download offline maps</strong> — Signal can be unreliable in remote areas.</li>
+            </ul>
+        `
+    },
+    taprohm: {
+        tag: "Nature", tagClass: "tag-nature",
+        title: "Ta Prohm: Where Jungle Meets Temple",
+        meta: "By CheatChinh  ·  November 8, 2025  ·  5 min read",
+        hero: "https://c8.alamy.com/comp/2FMA06H/siem-reap-cambodia-2FMA06H.jpg",
+        content: `
+            <p>Of all the temples in the park, none captures the imagination quite like Ta Prohm.</p>
+            <div class="modal-images">
+                <img src="https://c8.alamy.com/comp/D4037C/banyan-tree-roots-over-ta-phrom-temple-angkor-cambodia-D4037C.jpg" alt="Ta Prohm 1">
+                <img src="https://media.istockphoto.com/id/958035370/photo/royal-independence-gardens-giant-trees-in-siem-reap-cambodia.jpg?s=170667a&w=0&k=20&c=fbYrFj7td5Qdn0JiaKaUOrnZb6CRi4KB9pE1POgF_X4=" alt="Ta Prohm 2">
+            </div>
+            <p>Built in the late 12th century, Ta Prohm originally housed over 12,500 people including 615 dancers. French archaeologists left many trees in place — today enormous trees have wrapped their roots around towers and doorways.</p>
+            <h3>📸 Photography Tips</h3>
+            <ul class="article-list">
+                <li>The "tree over the doorway" shot is best in early morning light.</li>
+                <li>Visit on a weekday morning to avoid tour groups.</li>
+                <li>Explore the outer corridors — most tourists only see the central areas.</li>
+                <li>Rain makes the stone dramatically vivid in green and grey.</li>
+            </ul>
+        `
+    },
+    night: {
+        tag: "Night Scene", tagClass: "tag-night",
+        title: "Angkor Wat After Dark: Night Experiences",
+        meta: "By CheatChinh  ·  October 30, 2025  ·  4 min read",
+        hero: "https://www.siemreap.net/wp-content/uploads/2017/01/phnom-bakeng-sunset.jpg",
+        content: `
+            <p>As the last tour buses depart, Angkor transforms into something quieter and more mysterious.</p>
+            <div class="modal-images">
+                <img src="https://image.vietnamnews.vn/uploadvnnews/Article/2017/11/8/50x7051854146PM.jpg" alt="Night 1">
+                <img src="https://img.freepik.com/premium-photo/enchanting-nocturne-angkor-wat-temple-beautiful-moonlight-flooded-market_960911-20906.jpg" alt="Night 2">
+            </div>
+            <h3>🌙 Evening & Night Activities</h3>
+            <ul class="article-list">
+                <li><strong>Sunset at Phnom Bakheng</strong> — Celebrated hilltop sunset view. Arrive by 4:30 PM.</li>
+                <li><strong>Angkor Wat by Moonlight</strong> — Special full moon access occasionally offered.</li>
+                <li><strong>Apsara Dance Dinner Show</strong> — Ethereal dancers in golden costumes.</li>
+                <li><strong>Pub Street & Night Market</strong> — Handicrafts, silk, and street food.</li>
+                <li><strong>Stargazing in the Park</strong> — Dark skies with the Milky Way overhead.</li>
+            </ul>
+        `
+    },
+    history: {
+        tag: "History", tagClass: "tag-history",
+        title: "The Rise and Fall of the Khmer Empire",
+        meta: "By CheatChinh  ·  October 15, 2025  ·  8 min read",
+        hero: "https://images.pexels.com/photos/28912607/pexels-photo-28912607.jpeg",
+        content: `
+            <p>For nearly six centuries, the Khmer Empire was the most powerful civilisation in Southeast Asia — its capital, Angkor, home to nearly one million people.</p>
+            <div class="modal-images">
+                <img src="https://tse3.mm.bing.net/th/id/OIP.2DuRPGotcZFUSvp5JfSlvgHaJj?rs=1&pid=ImgDetMain&o=7&rm=3" alt="History 1">
+                <img src="https://tse3.mm.bing.net/th/id/OIP.N_t1VL-sU5NQVQiQ7s5HngHaH5?w=1500&h=1600&rs=1&pid=ImgDetMain&o=7&rm=3" alt="History 2">
+            </div>
+            <h3>🌱 Origins (802 AD)</h3>
+            <p>Jayavarman II proclaimed himself a <em>devaraja</em> (god-king) on Phnom Kulen, unifying the Khmer kingdoms.</p>
+            <h3>👑 The Golden Age (9th–13th Century)</h3>
+            <ul class="article-list">
+                <li><strong>Yasovarman I</strong> — Founded Angkor and created the first great reservoir.</li>
+                <li><strong>Suryavarman II</strong> — Built Angkor Wat, the greatest Khmer achievement.</li>
+                <li><strong>Jayavarman VII</strong> — Built Angkor Thom, Bayon, Ta Prohm, and hundreds of hospitals.</li>
+            </ul>
+            <h3>📉 Decline and Fall</h3>
+            <p>A combination of prolonged drought, ideological shifts, and military pressure from Ayutthaya led to Angkor being sacked in 1431. The site was rediscovered by French naturalist Henri Mouhot in 1860.</p>
+        `
+    }
+};
+
+/* ========== MODAL LOGIC ========== */
+function openPost(key) {
+    const p = posts[key];
+    if (!p) return;
+    document.getElementById("modalHero").src = p.hero;
+    document.getElementById("modalHero").alt = p.title;
+    const tagEl = document.getElementById("modalTag");
+    tagEl.textContent = p.tag;
+    tagEl.className = "post-tag " + p.tagClass;
+    document.getElementById("modalTitle").textContent = p.title;
+    document.getElementById("modalMeta").textContent = p.meta;
+    document.getElementById("modalContent").innerHTML = p.content;
+    const overlay = document.getElementById("modalOverlay");
+    overlay.classList.add("open");
+    document.body.style.overflow = "hidden";
+    overlay.scrollTop = 0;
+}
+
+function closeModal() {
+    document.getElementById("modalOverlay").classList.remove("open");
+    document.body.style.overflow = "";
+}
+
+function closeOnBg(e) {
+    if (e.target === document.getElementById("modalOverlay")) closeModal();
+}
+
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+</script>
+</body>
+</html>
